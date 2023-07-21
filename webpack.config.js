@@ -53,6 +53,14 @@ module.exports = {
         }
       },
       {
+        test: /vertex-worker/,
+        generator: {
+          publicPath: "assets/scripts/",
+          outputPath: "assets/scripts",
+          filename: "vertex-worker.js"
+        }
+      },
+      {
         // Look for Sass files and process them according to the
         // rules specified in the different loaders
         test: /\.(sa|sc)ss$/,

@@ -2,7 +2,8 @@
 <html>
   <head>
     <link rel="stylesheet" href="./assets/styles/main.css">
-    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aframe-extras@7.0.0/dist/aframe-extras.min.js"></script>
     <script src="./assets/scripts/bundle.js" defer></script>
   </head>
   <body>
@@ -12,31 +13,22 @@
       and release it for anyone to use.
     </div>
     <a-scene>
-      <a-assets>
-        <a-mixin
-          id="grassMixin"
-          instanced-mesh-member="mesh: #grassMesh"
-          scale="5 5 5"
-        >
-        </a-mixin>
-      </a-assets>
+      <a-entity
+        id="cameraRig"
+        multiplayer-broadcaster
+        movement-controls="controls: keyboard;"
+        position="0 0 0">
+        <a-entity camera
+          id="head"
+          position="0 1.2 0"
+          look-controls="pointerLockEnabled: false;">
+       </a-entity>
       </a-entity>
-      <a-box color="red" position="0 0 0" scale="0.1 0.1 20"></a-box>
-      <a-box color="red" position="0 0 0" scale="20 0.1 0.1"></a-box>
-      <a-sphere color="red" position="0 0 -1" scale="0.2 0.2 0.2"></a-sphere>
-      <!-- <a-entity rotation="0 310 0">
-        <a-box color="cyan" position="0 0.1 -5" scale="0.1 0.1 10"></a-box>
+      <a-entity id="scene-content-wrapper">
+        <a-entity scale="8 8 8" id="terrain"></a-entity>
+        <a-entity id="frustumGrass"></a-entity>
       </a-entity>
-      <a-entity rotation="0 288 0">
-        <a-box color="yellow" position="0 0.2 -5" scale="0.1 0.1 10"></a-box>
-      </a-entity>
-      <a-entity rotation="0 332 0">
-        <a-box color="yellow" position="0 0.2 -5" scale="0.1 0.1 10"></a-box>
-      </a-entity>
-    -->
-      <a-plane position="0 0 0" rotation="-90 0 0" width="100" height="100" color="#490"></a-plane>
-      <a-entity id="frustumGrass"></a-entity>
-      <a-sky color="#ECECEC"></a-sky>
+      <a-sky color="#ACACFF"></a-sky>
     </a-scene>
     <script>
     </script>

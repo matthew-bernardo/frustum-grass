@@ -21,7 +21,8 @@ function updateFrustum() {
 AFRAME.registerComponent("frustum-grass", {
   schema: {
     workerUrl: { type: "string" },
-    fov: { type: "number", default: Math.PI }
+    fov: { type: "number", default: Math.PI },
+    color: { type: "color", default: "#8e8" }
   },
   init() {
     this.totalBlades = 0
@@ -44,7 +45,7 @@ AFRAME.registerComponent("frustum-grass", {
       primitive: "frustum-grass"
     })
     meshInstance.setAttribute("material", {
-      color: "green",
+      color: this.data.color,
       side: "double",
       // shader: "grass",
     })
@@ -99,11 +100,8 @@ AFRAME.registerComponent("frustum-grass", {
     }
   },
   addGrass(event: { pos: [number, number, number], index: number }) {
-    // const grass = this.scene.components.pool__grass.requestEntity()
     const grass = document.createElement("a-entity")
     grass.setAttribute("instanced-mesh-member", { mesh: "#grassMesh" })
-    // grass.setAttribute("geometry", { primitive: "frustum-grass" })
-    // grass.setAttribute("material", { side: "double", shader: "grass", color: "#8e8" })
     grass.object3D.scale.set(7, 7, 7)
     grass.object3D.rotation.y = Math.PI * Math.random() * 0.5
     grass.object3D.scale.y *= 0.8 + Math.random() * 0.4
@@ -115,7 +113,6 @@ AFRAME.registerComponent("frustum-grass", {
     try {
       if (this.blades[index]) {
         this.blades[index].remove()
-        // this.scene.components.pool__grass.returnEntity(this.blades[index])
       }
     } catch(err) {
       console.warn("Error while releasing blade of grass from pool", err)
@@ -125,8 +122,8 @@ AFRAME.registerComponent("frustum-grass", {
 
 function getDummyVertices() {
   const vertices = []
-  for (let i = -50; i < 50; i += 0.25) {
-    for (let j = -50; j < 50; j += 0.25) {
+  for (let i = -50; i < 50; i += 0.5) {
+    for (let j = -50; j < 50; j += 0.5) {
       vertices.push({ pos: [i, 0, j] })
     }
   }

@@ -33,7 +33,9 @@
     "deploy": "aws --profile personal --recursive s3 cp --acl=public-read ./public s3://bernardo.lol/frustum-grass"
   },
   "dependencies": {
-    "aframe-instanced-mesh": "^0.7.0"
+    "aframe": "^1.4.2",
+    "aframe-instanced-mesh": "^0.7.0",
+    "terrainosaurus": "^1.1.4"
   },
   "peerDependencies": {
     "three": "^0.154.0"

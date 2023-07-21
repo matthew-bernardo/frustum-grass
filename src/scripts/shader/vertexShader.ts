@@ -25,6 +25,7 @@ export const noiseFunction = `
 export const displacementShaderBegin = `
   varying vec2 vUv;
   uniform float timeMsec;
+  uniform float metalness;
 `
 
 export const displacementShaderEnd = `
@@ -48,8 +49,8 @@ export const displacementShaderEnd = `
     
     float displacement = noise * ( 0.5 * dispPower );
     mvPosition.z -= displacement;
-    mvPosition.y += timeMsec;
-    
+    mvPosition.y += metalness;
+
     vec4 modelViewPosition = modelViewMatrix * mvPosition;
     gl_Position = projectionMatrix * modelViewPosition;
 `
