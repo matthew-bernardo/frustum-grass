@@ -3,20 +3,28 @@ import { registerTerrainosaurusComponent } from "terrainosaurus"
 
 import "./frustum-grass"
 
-const grassWorkerUrl = new URL("./frustum-grass-worker", import.meta.url)
-grassWorkerUrl.searchParams.append("isFile", "true")
-document.querySelector("#frustumGrass").setAttribute("frustum-grass", { workerUrl: grassWorkerUrl })
-
 const vertexWorkerUrl = new URL("terrainosaurus/dist/vertex-worker", import.meta.url)
-grassWorkerUrl.searchParams.append("isFile", "true")
+vertexWorkerUrl.searchParams.append("isFile", "true")
 registerTerrainosaurusComponent({
   vertexWorkerUrl
 }, AFRAME)
 
-setTimeout(() => {
-  const terrain = document.querySelector("#terrain")
-  terrain.setAttribute("terrainosaurus-terrain", {
-    seed: Math.random().toString().replace("0.", ""),
-    wrapper: "#scene-content-wrapper"
+const terrain = document.querySelector("#terrain")
+terrain.setAttribute("terrainosaurus-terrain", {
+  seed: Math.random().toString().replace("0.", ""),
+  wrapper: "#scene-content-wrapper",
+  noCollisionWrapper: "#noCollisionWrapper"
+})
+
+terrain.addEventListener("terrainInitialized", (event: CustomEvent) => {
+  const grassWorkerUrl = new URL("./frustum-grass-worker", import.meta.url)
+  grassWorkerUrl.searchParams.append("isFile", "true")
+
+  const grassWrapper = document.querySelector("#frustumGrass") as any
+  grassWrapper.setAttribute("frustum-grass", {
+    workerUrl: grassWorkerUrl,
+    color: "rgb(102, 244, 76)"
   })
-}, 100)
+
+  grassWrapper.components["frustum-grass"].setVertices(event.detail.terrainClient.vertices, true)
+})

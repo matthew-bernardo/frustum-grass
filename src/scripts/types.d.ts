@@ -3,6 +3,9 @@ interface IInitProps {
   vertices: Array<IVertex>;
   camera: ICamera;
   fov: number;
+  isTerrainosaurus: boolean;
+  terrainScale?: number;
+  density: number;
 }
 
 interface IUpdateProps {

@@ -17,7 +17,10 @@ self.addEventListener("message", (event) => {
     if (event.data.type === "initialize") {
         const data = event.data;
         // Compute an initial frustum
-        const { camera: { rotation, position }, vertices, fov } = data;
+        let { camera: { rotation, position }, vertices, fov, isTerrainosaurus, terrainScale, density } = data;
+        if (isTerrainosaurus) {
+            vertices = processTerrainosaurusVertices(vertices, terrainScale, density);
+        }
         context.vertices = vertices;
         const frustum = new Frustum(rotation[1], position[0], position[2], fov);
         context.fov = fov;
@@ -66,6 +69,57 @@ self.addEventListener("message", (event) => {
         context.frustum = newFrustum;
     }
 });
+function processTerrainosaurusVertices(vertices, terrainScale, density) {
+    const scaledVertices = vertices
+        .map((v) => ({
+        ...v,
+        pos: [
+            terrainScale * v.pos[0],
+            terrainScale * v.pos[1],
+            terrainScale * v.pos[2],
+        ],
+    }));
+    const interpolatedVertices = [];
+    const edgeLength = Math.abs(vertices[0].pos[0] - vertices[5].pos[0]);
+    const interpolatedBlades = density;
+    for (let i = 0; i < scaledVertices.length; i += 6) {
+        for (let j = 0; j < interpolatedBlades; j++) {
+            if (!isGreen(scaledVertices[i])) {
+                continue;
+            }
+            const randomOffset = [
+                Math.random() * edgeLength * terrainScale,
+                null,
+                Math.random() * edgeLength * terrainScale,
+            ];
+            const corners = [
+                scaledVertices[i + 5].pos,
+                scaledVertices[i + 3].pos,
+                scaledVertices[i + 1].pos,
+                scaledVertices[i].pos,
+            ];
+            const [x, y, z] = interpolate(randomOffset, corners);
+            interpolatedVertices.push({ pos: [x, y, z], color: scaledVertices[i].color });
+        }
+    }
+    return interpolatedVertices;
+}
+function interpolate(offset, [tl, tr, bl, br]) {
+    const leftEdgeSlope = (bl[1] - tl[1]) / (bl[2] - tl[2]);
+    const rightEdgeSlope = (br[1] - tr[1]) / (br[2] - tr[2]);
+    const leftY = tl[1] + leftEdgeSlope * offset[2];
+    const rightY = tr[1] + rightEdgeSlope * offset[2];
+    const interpolatedSlope = (rightY - leftY) / (br[0] - bl[0]);
+    const interpolatedY = leftY + interpolatedSlope * offset[0];
+    return [tl[0] + offset[0], interpolatedY, tl[2] + offset[2]];
+}
+function isGreen(vertex) {
+    if (vertex.color) {
+        const [r, g, b] = vertex.color;
+        return g > 1.2 * r && g > 1.2 * b;
+    }
+    return false;
+}
 class Frustum {
     contains(x, y) {
         return (this.conditions[0](x, y) &&
@@ -135,7 +189,7 @@ class Frustum {
         }
         // A distance condition - anything further than 10m away will be considered out of frustum
         this.conditions.push((x, y) => {
-            return (x - this.origin.x) ** 2 + (y - this.origin.y) ** 2 <= 100;
+            return (x - this.origin.x) ** 2 + (y - this.origin.y) ** 2 <= 180;
         });
     }
 }

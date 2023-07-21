@@ -25,10 +25,10 @@ AFRAME.registerComponent("frustum-grass", {
     color: { type: "color", default: "#8e8" }
   },
   init() {
-    this.totalBlades = 0
     this.cameraWorldPos = new Vector3()
     this.camera = document.querySelector("[camera]")
     this.blades = {}
+    this.totalBlades = 0
     // Create grass geometry
     AFRAME.registerGeometry("frustum-grass", {
       init() {
@@ -55,56 +55,52 @@ AFRAME.registerComponent("frustum-grass", {
     meshInstance.setAttribute("id", "grassMesh")
     this.el.appendChild(meshInstance)
 
-    // Create object pool - we're adding and removing a lot of grass, so pooling is good for performance
-    // this.scene = document.querySelector("a-scene")
-    // this.scene.setAttribute("pool__grass", {
-    //   mixin: "grassMixin",
-    //   dynamic: true,
-    //   size: 8000,
-    //   container: "[frustum-grass]"
-    // })
-
-    this.initializeWorker()
+    this.registerWorker()
     this.tick = AFRAME.utils.throttleTick(updateFrustum.bind(this), 100)
   },
   update() {
-    this.initializeWorker()
+    this.registerWorker()
   },
-  initializeWorker() {
-    if (!this.workerInitialized && this.data.workerUrl) {
+  registerWorker() {
+    if (!this.workerRegistered && this.data.workerUrl) {
       this.grassWorker = new Worker(this.data.workerUrl, { type: "module" });
       this.grassWorker.onmessage = ({ data }: any) => {
         if (data.type === "addGrass") {
-          this.totalBlades++
           this.addGrass(data)
         }
         if (data.type === "removeGrass") {
-          this.totalBlades--
           this.removeGrass(data.index)
         }
       }
-      this.workerInitialized = true
-      this.camera.object3D.getWorldPosition(this.cameraWorldPos)
-      const { rotation } = this.camera.object3D;
-      const position = this.cameraWorldPos
-      const initEvent: IInitProps = {
-        type: "initialize",
-        vertices: getDummyVertices() as Array<IVertex>,
-        camera: {
-          position: [position.x, position.y, position.z],
-          rotation: [rotation.x, rotation.y, rotation.z]
-        },
-        fov: this.data.fov
-      }
-      this.grassWorker.postMessage(initEvent)
+      this.workerRegistered = true
     }
+  },
+  setVertices(vertices: Array<IVertex>, isTerrainosaurus: boolean) {
+    this.camera.object3D.getWorldPosition(this.cameraWorldPos)
+    const { rotation } = this.camera.object3D;
+    const position = this.cameraWorldPos
+    const initEvent: IInitProps = {
+      type: "initialize",
+      vertices,
+      isTerrainosaurus,
+      density: 24,
+      terrainScale: 8,
+      camera: {
+        position: [position.x, position.y, position.z],
+        rotation: [rotation.x, rotation.y, rotation.z]
+      },
+      fov: this.data.fov
+    }
+    this.grassWorker.postMessage(initEvent)
+    this.workerInitialized = true
   },
   addGrass(event: { pos: [number, number, number], index: number }) {
     const grass = document.createElement("a-entity")
     grass.setAttribute("instanced-mesh-member", { mesh: "#grassMesh" })
     grass.object3D.scale.set(7, 7, 7)
     grass.object3D.rotation.y = Math.PI * Math.random() * 0.5
-    grass.object3D.scale.y *= 0.8 + Math.random() * 0.4
+    grass.object3D.rotation.x = Math.random() * 0.4 - 0.2
+    grass.object3D.scale.y *= 0.8 + Math.random() * 0.5
     grass.object3D.position.set(...event.pos)
     this.el.appendChild(grass)
     this.blades[event.index] = grass
@@ -119,16 +115,6 @@ AFRAME.registerComponent("frustum-grass", {
     }
   }
 })
-
-function getDummyVertices() {
-  const vertices = []
-  for (let i = -50; i < 50; i += 0.5) {
-    for (let j = -50; j < 50; j += 0.5) {
-      vertices.push({ pos: [i, 0, j] })
-    }
-  }
-  return vertices
-}
 
 export function getGrassGeometry() {
   const grassGeometry = new BufferGeometry();

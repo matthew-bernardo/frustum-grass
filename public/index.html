@@ -25,10 +25,18 @@
        </a-entity>
       </a-entity>
       <a-entity id="scene-content-wrapper">
+        <a-entity id="noCollisionWrapper">
+          <a-entity id="frustumGrass"></a-entity>
+          <a-circle
+            scale="160 160 160"
+            position="0 0 0"
+            material="side: double; transparent: true; opacity: 0.5; color: #08c;"
+            rotation="90 0 0">
+          </a-circle>
+        </a-entity>
         <a-entity scale="8 8 8" id="terrain"></a-entity>
-        <a-entity id="frustumGrass"></a-entity>
       </a-entity>
-      <a-sky color="#ACACFF"></a-sky>
+      <a-sky color="#4cf"></a-sky>
     </a-scene>
     <script>
     </script>
