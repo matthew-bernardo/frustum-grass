@@ -82,12 +82,16 @@ AFRAME.registerComponent("frustum-grass", {
     this.camera.object3D.getWorldPosition(this.cameraWorldPos)
     const { rotation } = this.camera.object3D;
     const position = this.cameraWorldPos
+    let terrainScale = 1
+    if (isTerrainosaurus) {
+      terrainScale = document.querySelector("[terrainosaurus-terrain]").object3D.scale.x
+    }
     const initEvent: IInitProps = {
       type: "initialize",
       vertices,
       isTerrainosaurus,
       density: this.data.density,
-      terrainScale: 8,
+      terrainScale,
       camera: {
         position: [position.x, position.y, position.z],
         rotation: [rotation.x, rotation.y, rotation.z]
