@@ -1,8 +1,14 @@
 {
-  "name": "frustum_grass",
-  "version": "1.0.0",
-  "main": "index.js",
+  "name": "frustum-grass",
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "types": "dist/types.d.ts",
   "license": "MIT",
+  "author": {
+    "name": "Matthew Bernardo",
+    "url": "https://bernardo.lol"
+  },
+  "keywords": ["grass", "a-frame", "threejs", "aframe", "webxr", "terrain"],
   "devDependencies": {
     "@babel/core": "^7.22.9",
     "@babel/preset-env": "^7.22.9",
@@ -30,7 +36,8 @@
     "dev:start": "live-server --open=./public/ --host=localhost --watch=./public/",
     "dev": "npm-run-all -p dev:*",
     "build": "cross-env NODE_ENV=production webpack",
-    "deploy": "aws --profile personal --recursive s3 cp --acl=public-read ./public s3://bernardo.lol/frustum-grass"
+    "deploy": "aws --profile personal --recursive s3 cp --acl=public-read ./public s3://bernardo.lol/frustum-grass",
+    "prepublishOnly": "rm dist/*; tsc --outDir .build; cp .build/src/scripts/frustum-grass.js dist/index.js; cp .build/src/scripts/frustum-grass-worker.js dist; cp src/scripts/types.d.ts dist; rm -rf .build;"
   },
   "dependencies": {
     "aframe": "^1.4.2",
