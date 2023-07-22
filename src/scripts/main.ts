@@ -11,7 +11,7 @@ registerTerrainosaurusComponent({
 
 const terrain = document.querySelector("#terrain")
 terrain.setAttribute("terrainosaurus-terrain", {
-  seed: Math.random().toString().replace("0.", ""),
+  seed: "921" + Math.random().toString().replace("0.", ""),
   wrapper: "#scene-content-wrapper",
   noCollisionWrapper: "#noCollisionWrapper"
 })
@@ -23,6 +23,8 @@ terrain.addEventListener("terrainInitialized", (event: CustomEvent) => {
   const grassWrapper = document.querySelector("#frustumGrass") as any
   grassWrapper.setAttribute("frustum-grass", {
     workerUrl: grassWorkerUrl,
+    fov: Math.PI / 1.5,
+    density: 32,
     color: "rgb(102, 244, 76)"
   })
 

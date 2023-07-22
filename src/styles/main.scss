@@ -1,0 +1,19 @@
+#overlay {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  z-index: 1;
+  font-family: monospace;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 2em;
+  .disclaimer {
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(4px);
+    border-radius: 6px;
+    padding: 2em;
+  }
+}

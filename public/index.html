@@ -1,28 +1,46 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="./assets/styles/main.css">
+    <link rel="stylesheet" href="./assets/styles/main.css" />
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/aframe-extras@7.0.0/dist/aframe-extras.min.js"></script>
     <script src="./assets/scripts/bundle.js" defer></script>
   </head>
   <body>
-    <div id="overlay" style="position: fixed; top: 20px; left: 20px; z-index: 1; font-family: monospace;">
-      This is a prototype grass shader for <a href="https://about.pocketdimension.io">Pocket Dimension</a>.
-      If Pocket Dimension somehow gets funded I'll spend some time working out all the kinks with this prototype
-      and release it for anyone to use.
+    <div
+      id="overlay"
+    >
+      <div class="disclaimer" onclick="this.remove()">
+        This is a prototype grass component for
+        <a href="https://about.pocketdimension.io">Pocket Dimension</a>.
+        It uses several performance optimization techniques to render as much grass as possible
+        while keeping framerates high. It's also designed to be used with Terrainosaurus.
+        If Pocket Dimension somehow gets funded I'll spend some time working out all the
+        kinks with this prototype and release it for anyone to use.
+        <strong>(Click to dismiss)</strong>
+      </div>
     </div>
-    <a-scene>
+    <a-scene
+      renderer="physicallyCorrectLights: true; maxCanvasHeight: 1920; maxCanvasWidth: 1920; antialias: true; precision: low;"
+    >
+      <a-entity light="type: ambient; color: #BBB; intensity: 1.5;"></a-entity>
+      <a-entity
+        light="type: directional; color: #FFF; intensity: 2;"
+        position="-0.5 1 1"
+      ></a-entity>
       <a-entity
         id="cameraRig"
         multiplayer-broadcaster
         movement-controls="controls: keyboard;"
-        position="0 0 0">
-        <a-entity camera
+        position="0 0 0"
+      >
+        <a-entity
+          camera
           id="head"
-          position="0 1.2 0"
-          look-controls="pointerLockEnabled: false;">
-       </a-entity>
+          position="0 1 0"
+          look-controls="pointerLockEnabled: false;"
+        >
+        </a-entity>
       </a-entity>
       <a-entity id="scene-content-wrapper">
         <a-entity id="noCollisionWrapper">
@@ -31,14 +49,14 @@
             scale="160 160 160"
             position="0 0 0"
             material="side: double; transparent: true; opacity: 0.5; color: #08c;"
-            rotation="90 0 0">
+            rotation="90 0 0"
+          >
           </a-circle>
         </a-entity>
         <a-entity scale="8 8 8" id="terrain"></a-entity>
       </a-entity>
-      <a-sky color="#4cf"></a-sky>
+      <a-sky color="#4cf" material="fog: false;"></a-sky>
     </a-scene>
-    <script>
-    </script>
+    <script></script>
   </body>
 </html>

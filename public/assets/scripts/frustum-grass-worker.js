@@ -56,7 +56,8 @@ self.addEventListener("message", (event) => {
                         v.pos[1],
                         v.pos[2] - 0.2 + Math.random() * 0.4,
                     ];
-                    postMessage({ type: "addGrass", pos, index });
+                    const isFar = context.frustum.getSquaredDistance(v.pos[0], v.pos[2]) > 400;
+                    postMessage({ type: "addGrass", pos, index, isFar });
                 }
             }
         });
@@ -99,7 +100,7 @@ function processTerrainosaurusVertices(vertices, terrainScale, density) {
                 scaledVertices[i].pos,
             ];
             const [x, y, z] = interpolate(randomOffset, corners);
-            interpolatedVertices.push({ pos: [x, y, z], color: scaledVertices[i].color });
+            interpolatedVertices.push({ pos: [x, y - 0.1, z], color: scaledVertices[i].color });
         }
     }
     return interpolatedVertices;
@@ -124,7 +125,25 @@ class Frustum {
     contains(x, y) {
         return (this.conditions[0](x, y) &&
             this.conditions[1](x, y) &&
-            this.conditions[2](x, y));
+            this.distanceFalloff(x, y));
+    }
+    getSquaredDistance(x, y) {
+        return (this.origin.x - x) ** 2 + (this.origin.y - y) ** 2;
+    }
+    distanceFalloff(x, y) {
+        const squaredDistance = this.getSquaredDistance(x, y);
+        if (squaredDistance < 200) {
+            return true;
+        }
+        if (squaredDistance < 400) {
+            return Math.round(4 * x + 4 * y) % 2;
+        }
+        if (squaredDistance < 900) {
+            return !((Math.round(4 * x + 4 * y) + 2) % 4);
+        }
+        return false;
+        // const threshold = -2 * Math.atan((squaredDistance - 400) / 10) / Math.PI
+        // return Math.random() < threshold
     }
     constructor(angle, x, y, fov = Math.PI / 1.5) {
         // camera y-rotations in a-frame are shifted 90 degrees from the cartesian coordinate system.
@@ -187,10 +206,6 @@ class Frustum {
                 this.conditions.push((x, y) => this.frustum2(x) >= y);
             }
         }
-        // A distance condition - anything further than 10m away will be considered out of frustum
-        this.conditions.push((x, y) => {
-            return (x - this.origin.x) ** 2 + (y - this.origin.y) ** 2 <= 180;
-        });
     }
 }
 function getAngle(angle) {
